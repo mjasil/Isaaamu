@@ -3,6 +3,7 @@ import { supabase } from "./supabaseClient";
 import AuthScreen from "./AuthScreen";
 import MainApp from "./MainApp";
 import AdminPanel from "./AdminPanel";
+import { registerPush } from "./pushNotifications";
 
 const isAdminRoute = new URLSearchParams(window.location.search).get("admin") === "true";
 
@@ -36,6 +37,7 @@ export default function App() {
           setProfileError(error.message);
         }
         setProfile(data ?? null);
+        if (data?.id) registerPush(data.id);
       });
   }, [session?.user?.id]);
 

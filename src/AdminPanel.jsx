@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
-import { Shield, Users, FileText, BarChart3, LogOut, UserPlus, Link as LinkIcon } from "lucide-react";
+import { Shield, Users, FileText, BarChart3, LogOut, UserPlus, Link as LinkIcon, Bell } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
 export default function AdminPanel({ onClose, onSignOut, standalone }) {
-  const [tab, setTab] = useState("users"); // users | create | content | stats
+  const [tab, setTab] = useState("users"); // users | create | content | stats | notify
+  const [notifyTitle, setNotifyTitle] = useState("");
+  const [notifyBody, setNotifyBody] = useState("");
+  const [notifyMsg, setNotifyMsg] = useState("");
+  const [sending, setSending] = useState(false);
   const [users, setUsers] = useState([]);
   const [content, setContent] = useState([]);
   const [stats, setStats] = useState({ total: 0, small: 0, big: 0 });
@@ -42,6 +46,29 @@ export default function AdminPanel({ onClose, onSignOut, standalone }) {
   async function updateContentValue(key, value) {
     await supabase.from("app_content").upsert({ key, value }, { onConflict: "key" });
     loadAll();
+  }
+
+  async function sendNotification(e) {
+    e.preventDefault();
+    setNotifyMsg("");
+    if (!notifyTitle.trim() || !notifyBody.trim()) {
+      setNotifyMsg("Title and message are required.");
+      return;
+    }
+    setSending(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data, error } = await supabase.functions.invoke("send-notification", {
+      body: { title: notifyTitle.trim(), body: notifyBody.trim() },
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+    });
+    setSending(false);
+    if (error || data?.error) {
+      setNotifyMsg(data?.error || error.message || "Failed to send.");
+    } else {
+      setNotifyMsg(`Sent to ${data?.sent ?? 0} device(s).`);
+      setNotifyTitle("");
+      setNotifyBody("");
+    }
   }
 
   async function createUser(e) {
@@ -94,6 +121,7 @@ export default function AdminPanel({ onClose, onSignOut, standalone }) {
             { id: "create", label: "Create", icon: UserPlus },
             { id: "content", label: "Content", icon: FileText },
             { id: "stats", label: "Stats", icon: BarChart3 },
+            { id: "notify", label: "Notify", icon: Bell },
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -217,6 +245,43 @@ export default function AdminPanel({ onClose, onSignOut, standalone }) {
                   Stats reflect real outcomes — results are never overridden here.
                 </p>
               </div>
+            )}
+
+            {tab === "notify" && (
+              <form onSubmit={sendNotification} className="space-y-3">
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-wide">Title</label>
+                  <input
+                    value={notifyTitle}
+                    onChange={(e) => setNotifyTitle(e.target.value)}
+                    placeholder="e.g. New update"
+                    className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mt-1 outline-none focus:border-[#3b82ff]/60"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-wide">Message</label>
+                  <textarea
+                    value={notifyBody}
+                    onChange={(e) => setNotifyBody(e.target.value)}
+                    placeholder="What do you want to tell everyone?"
+                    rows={3}
+                    className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-white text-sm mt-1 outline-none focus:border-[#3b82ff]/60 resize-none"
+                  />
+                </div>
+                {notifyMsg && <p className="text-[#8ab4ff] text-xs">{notifyMsg}</p>}
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="w-full flex items-center justify-center gap-2 text-white font-semibold text-sm py-2.5 rounded-lg disabled:opacity-50"
+                  style={{ background: "linear-gradient(90deg, #3b82ff, #0037a8)" }}
+                >
+                  <Bell size={15} />
+                  {sending ? "Sending..." : "Send to all users"}
+                </button>
+                <p className="text-white/30 text-[10px] text-center">
+                  Goes out to every device that has the app installed and notifications enabled.
+                </p>
+              </form>
             )}
           </>
         )}

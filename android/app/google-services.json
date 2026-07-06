@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "634085732325",
+    "project_id": "notify-2750c",
+    "storage_bucket": "notify-2750c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634085732325:android:a0d48f77e8224e1135890c",
+        "android_client_info": {
+          "package_name": "com.byflovex.carlosux"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6B3FC27cVMq9jMqVRv23xNuYVsXLSlZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634085732325:android:93a13915100d68ee35890c",
+        "android_client_info": {
+          "package_name": "com.byflovex.flynfx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6B3FC27cVMq9jMqVRv23xNuYVsXLSlZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634085732325:android:17b86bc4059675ac35890c",
+        "android_client_info": {
+          "package_name": "com.byflovex.isaaamu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6B3FC27cVMq9jMqVRv23xNuYVsXLSlZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
