@@ -7,6 +7,17 @@ export async function registerPush(userId) {
   if (!userId) return;
 
   try {
+    // Android: create a HIGH importance channel so notifications pop up
+    // as a heads-up banner instead of landing silently in the shade.
+    await PushNotifications.createChannel({
+      id: "default",
+      name: "Default",
+      description: "General notifications",
+      importance: 5, // IMPORTANCE_HIGH
+      visibility: 1,
+      vibration: true,
+    }).catch(() => {}); // no-op on platforms that don't support channels (e.g. web)
+
     const permStatus = await PushNotifications.checkPermissions();
 
     let granted = permStatus.receive === "granted";
@@ -34,3 +45,4 @@ export async function registerPush(userId) {
     console.log("Push notifications unavailable:", e?.message);
   }
 }
+

@@ -146,6 +146,10 @@ Deno.serve(async (req) => {
               message: {
                 token: row.token,
                 notification: { title, body },
+                android: {
+                  priority: "high",
+                  notification: { channel_id: "default" },
+                },
               },
             }),
           }
